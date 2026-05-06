@@ -1,0 +1,326 @@
+openapi: 3.0.3
+info:
+  title: E-commerce API
+  version: 1.0.0
+  description: Production-ready backend for an e-commerce application built with Node.js, Express, and MongoDB.
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local development server
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+  /auth/login:
+    post:
+      summary: Log in user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+  /products:
+    get:
+      summary: Retrieve all products with pagination, filtering, and sorting
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product list returned
+    post:
+      summary: Create a new product (admin)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+                stock:
+                  type: integer
+                images:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Product created
+  /products/{id}:
+    get:
+      summary: Get product details
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product found
+    put:
+      summary: Update product (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: number
+                category:
+                  type: string
+                stock:
+                  type: integer
+                images:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Product updated
+    delete:
+      summary: Delete product (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Product deleted
+  /products/{productId}/reviews:
+    post:
+      summary: Add a product review
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating]
+              properties:
+                rating:
+                  type: integer
+                comment:
+                  type: string
+      responses:
+        '201':
+          description: Review added
+  /cart:
+    get:
+      summary: Get current user cart
+      responses:
+        '200':
+          description: Cart returned
+    post:
+      summary: Add or update cart item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Cart updated
+    delete:
+      summary: Clear cart
+      responses:
+        '200':
+          description: Cart cleared
+  /cart/{productId}:
+    delete:
+      summary: Remove item from cart
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Item removed
+  /orders:
+    post:
+      summary: Place an order
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shippingAddress:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    city:
+                      type: string
+                    country:
+                      type: string
+                    postalCode:
+                      type: string
+      responses:
+        '201':
+          description: Order placed
+    get:
+      summary: Get all orders (admin)
+      responses:
+        '200':
+          description: Orders returned
+  /orders/mine:
+    get:
+      summary: Get authenticated user orders
+      responses:
+        '200':
+          description: Orders returned
+  /orders/{id}:
+    get:
+      summary: Get order by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order returned
+  /orders/{id}/status:
+    put:
+      summary: Update order status (admin)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Order status updated
+  /users/me:
+    get:
+      summary: Get current user profile
+      responses:
+        '200':
+          description: User profile returned
+    put:
+      summary: Update current user profile
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: User updated
+  /admin/users:
+    get:
+      summary: Get all users (admin)
+      responses:
+        '200':
+          description: Users returned
+  /admin/analytics:
+    get:
+      summary: Get admin analytics
+      responses:
+        '200':
+          description: Analytics returned
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
