@@ -7,14 +7,14 @@ const register = catchAsync(async (req, res) => {
 
   const { name, email, password } = req.body;
 
-  // ✅ Validate input (FIXES YOUR ERROR)
+  //  Validate input 
   if (!name || !email || !password) {
     throw new ApiError(400, 'Name, email and password are required');
   }
 
   const user = await authService.registerUser({ name, email, password });
 
-  // ✅ Safety check
+  //  Safety check
   if (!user) {
     throw new ApiError(500, 'User registration failed');
   }
@@ -33,7 +33,7 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
 
-  // ✅ Validate input
+  //  Validate input
   if (!email || !password) {
     throw new ApiError(400, 'Email and password are required');
   }
@@ -58,7 +58,7 @@ const login = catchAsync(async (req, res) => {
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.body;
 
-  // ✅ Validate
+  //  Validate
   if (!refreshToken) {
     throw new ApiError(400, 'Refresh token is required');
   }
